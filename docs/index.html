@@ -105,6 +105,13 @@
   .flash{position:absolute;inset:0;background:#fff;opacity:0;z-index:7;pointer-events:none}
   .flash.go{animation:flash .5s ease}
   @keyframes flash{0%{opacity:0}12%{opacity:.85}100%{opacity:0}}
+  .flash.go2{animation:flash2 .55s ease}
+  @keyframes flash2{0%{opacity:0}14%{opacity:.5}100%{opacity:0}}
+
+  /* 슬로우 모션 구간 — 얼굴이 다 읽히도록 무대(돗자리·앉아있는 캐릭터)는 살짝 죽임 */
+  .scene{transition:opacity .45s ease}
+  #intro.slowmo .scene{opacity:.28}
+  #intro.slowmo .hint{animation:none;opacity:0}
 
   .hint{position:absolute;left:0;right:0;top:18%;text-align:center;color:var(--muted);
     font-size:14px;letter-spacing:.02em;opacity:0;animation:fadeIn .8s ease .3s forwards}
@@ -314,17 +321,58 @@
         life:1,decay:0.012+Math.random()*0.02,c:COLORS[(Math.random()*COLORS.length)|0],r:1.5+Math.random()*2});
     }
   }
-  let raf=null, running=false;
-  function loop(){
+  /* 마지막 한 방 — 12명이 화면 전체에 고르게 내려앉도록 착지점을 정해놓고 쏨.
+     원형으로 흩뿌리면 폰 화면 폭에 12명이 다 들어가느라 얼굴이 작아져서, 격자형 착지가 훨씬 크게 들어감.
+     아래 세 상수는 "초기속도 1이 슬로우 구간 한가운데까지 만들어내는 이동량"을 미리 계산해둔 값. */
+  const K_X=27.93, K_Y=32.95, K_G=44.5;
+  let fxCenter={x:0,y:0};
+  function finale(){
+    const cx=fxCenter.x, cy=fxCenter.y;
+    parts.forEach(p=>{ p.decay=Math.max(p.decay,0.05); });   // 앞선 폭죽은 빠르게 걷어내 무대를 비움
+    flash.classList.remove('go','go2'); void flash.offsetWidth; flash.classList.add('go2');
+    const size=Math.min(110, W*0.195, H*0.155);
+    const cols = H>=W ? 3 : 4, rows = H>=W ? 4 : 3;
+    const pad=size*0.28, cw=(W-2*pad)/cols, ch=(H-2*pad)/rows;
+    const cells=[];
+    for(let r=0;r<rows;r++) for(let c=0;c<cols;c++) cells.push([c,r]);
+    for(let i=cells.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [cells[i],cells[j]]=[cells[j],cells[i]]; }
+    FACES.forEach((f,i)=>{
+      const c=cells[i][0], r=cells[i][1];
+      const tx=pad+(c+.5)*cw+(Math.random()-.5)*cw*0.08;
+      const ty=pad+(r+.5)*ch+(Math.random()-.5)*ch*0.08;
+      parts.push({x:cx,y:cy,vx:(tx-cx)/K_X, vy:(ty-cy-K_G)/K_Y,
+        img:imgs[f], size:size,
+        rot:(Math.random()-.5)*0.18, vr:(Math.random()-.5)*0.010,  // 거의 안 돌아야 얼굴이 읽힘
+        life:1, decay:0.0035, ring:COLORS[i%COLORS.length]});
+    });
+    for(let i=0;i<70;i++){
+      const a=Math.random()*Math.PI*2, sp=3+Math.random()*6;
+      sparks.push({x:cx,y:cy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-2,
+        life:1,decay:0.02+Math.random()*0.02,c:COLORS[(Math.random()*COLORS.length)|0],r:1.5+Math.random()*2});
+    }
+    ensureLoop();
+  }
+
+  let raf=null, running=false, lastT=0;
+  let timeScale=1, tsTarget=1;                 // 1 = 정상 속도, <1 = 슬로우 모션
+  function setSlow(v){ tsTarget=v; }
+  function loop(now){
+    // 프레임 간격 보정 — 60Hz든 120Hz든 같은 속도/같은 착지점이 되도록
+    if(!lastT) lastT=now;
+    let dt=(now-lastT)/16.6667; lastT=now;
+    dt=Math.max(0.4,Math.min(2.5,dt));         // 탭 전환 등으로 튀는 값 차단
+    timeScale += (tsTarget-timeScale)*(1-Math.pow(0.86,dt));   // 툭 끊지 않고 부드럽게 감속
+    const ts=timeScale, step=dt*ts;
+    const sparkStep=dt*Math.max(ts,0.45);      // 불꽃가루는 덜 느리게 → 얼굴을 가리지 않고 먼저 사라짐
     ctx.clearRect(0,0,W,H);
     for(let i=sparks.length-1;i>=0;i--){const s=sparks[i];
-      s.vy+=0.05; s.x+=s.vx; s.y+=s.vy; s.life-=s.decay;
+      s.vy+=0.05*step; s.x+=s.vx*step; s.y+=s.vy*step; s.life-=s.decay*sparkStep;
       if(s.life<=0){sparks.splice(i,1);continue;}
       ctx.globalAlpha=Math.max(0,s.life); ctx.fillStyle=s.c;
       ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,7);ctx.fill();
     }
     for(let i=parts.length-1;i>=0;i--){const p=parts[i];
-      p.vy+=0.08; p.vx*=0.99; p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; p.life-=p.decay;
+      p.vy+=0.08*step; p.vx*=1-0.01*step; p.x+=p.vx*step; p.y+=p.vy*step; p.rot+=p.vr*step; p.life-=p.decay*step;
       if(p.life<=0||p.y>H+80){parts.splice(i,1);continue;}
       ctx.save(); ctx.globalAlpha=Math.max(0,Math.min(1,p.life*1.4));
       ctx.translate(p.x,p.y); ctx.rotate(p.rot);
@@ -340,7 +388,7 @@
     if(parts.length||sparks.length) raf=requestAnimationFrame(loop);
     else { running=false; }
   }
-  function ensureLoop(){ if(!running){running=true; raf=requestAnimationFrame(loop);} }
+  function ensureLoop(){ if(!running){running=true; lastT=0; raf=requestAnimationFrame(loop);} }
 
   /* ---------- timeline ---------- */
   const introEl=document.getElementById('intro');
@@ -354,11 +402,12 @@
   function fireShow(){
     resize();
     const p=bellPos(); const cx=p.x, cy=p.y;   // 종 위치(정중앙)에서 터짐
+    fxCenter={x:cx,y:cy};
     burst(cx,cy,14,7.5);
-    let elapsed=0;                              // 3초 동안 연속 폭죽
+    let elapsed=0;                              // 1.7초 동안 연속 폭죽 → 잠깐 잦아들었다가 피날레
     fireIv=setInterval(()=>{
       elapsed+=300;
-      if(elapsed>=3000){ clearInterval(fireIv); fireIv=null; return; }
+      if(elapsed>=1700){ clearInterval(fireIv); fireIv=null; return; }
       const jx=(Math.random()-.5)*90, jy=(Math.random()-.5)*80;
       burst(cx+jx, cy+jy, 8+Math.floor(Math.random()*5), 6+Math.random()*2.5);
     },300);
@@ -366,7 +415,7 @@
   }
 
   function runSequence(){
-    finished=false;
+    finished=false; timeScale=1; setSlow(1); introEl.classList.remove('slowmo');
     // 모든 캐릭터 초기화 + 종 누를 사람 랜덤 선택 (접속/다시보기 때마다)
     chars.forEach(c=>{ c.style.transform='translate(-50%,-50%)'; c.classList.remove('run'); c.style.zIndex=''; });
     runner = chars[Math.floor(Math.random()*chars.length)];
@@ -392,7 +441,9 @@
       document.querySelectorAll('.card').forEach(c=>c.style.animation='none');
       fireShow();
     },2700);
-    // 폭죽 3초 후 본문 공개
+    // 피날레: 12명 얼굴이 화면 가득 퍼진 뒤 → 넘어가기 직전 1초는 슬로우 모션으로 전부 보여줌
+    T(finale, 4550);
+    T(()=>{ setSlow(0.12); introEl.classList.add('slowmo'); }, 4950);
     T(()=>{ reveal(); },5950);
   }
 
@@ -400,7 +451,8 @@
     if(finished) return; finished=true;
     introEl.classList.add('done');
     document.getElementById('content').classList.add('show');
-    setTimeout(()=>{ introEl.style.display='none'; }, 900);
+    setTimeout(()=>{ introEl.style.display='none';
+      parts.length=0; sparks.length=0; timeScale=1; setSlow(1); }, 900);
   }
   function skip(){ clearTimers(); reveal(); }
 
@@ -409,12 +461,12 @@
   function replay(){
     // reset intro
     finished=false; clearTimers();
-    parts.length=0; sparks.length=0; ctx.clearRect(0,0,W,H);
-    bell.classList.remove('ring'); hand.classList.remove('go'); flash.classList.remove('go');
+    parts.length=0; sparks.length=0; timeScale=1; setSlow(1); ctx.clearRect(0,0,W,H);
+    bell.classList.remove('ring'); hand.classList.remove('go'); flash.classList.remove('go','go2');
     runner.classList.remove('run');
     document.querySelectorAll('.card').forEach(c=>c.style.animation='');
     document.getElementById('content').classList.remove('show');
-    introEl.style.display=''; introEl.classList.remove('done');
+    introEl.style.display=''; introEl.classList.remove('done','slowmo');
     window.scrollTo(0,0);
     // force reflow to restart CSS anim
     void introEl.offsetWidth;
