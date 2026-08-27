@@ -233,7 +233,8 @@
 (function(){
   const CFG = window.INVITE_CONFIG;
   const FACES = ["01_man1_left","02_man2_glass","03_man3_center","04_woman_offsh","05_woman_left",
-                 "06_woman_pony","07_woman_bang","08_woman_blue","09_woman_smile","10_man4_right"];
+                 "06_woman_pony","07_woman_bang","08_woman_blue","09_woman_smile","10_man4_right",
+                 "11_man5_shirt","12_man6_wine"];
   const charPath = f => "chars/"+f+".png";
   const charFacePath = f => "faces_char/"+f+".png";
 
@@ -260,10 +261,10 @@
   /* ---------- 네모 돗자리 둘레에 전신 캐릭터 배치 ---------- */
   const scene = document.getElementById('scene');
   const seats = [
-    {x:30,y:26},{x:50,y:22},{x:70,y:26},   // 위쪽 3명
-    {x:16,y:46},{x:18,y:67},               // 왼쪽 2명
-    {x:84,y:46},{x:82,y:67},               // 오른쪽 2명
-    {x:32,y:81},{x:50,y:85},{x:68,y:81}    // 아래쪽 3명
+    {x:30,y:24},{x:50,y:21},{x:70,y:24},   // 위쪽 3명
+    {x:15,y:43},{x:14,y:62},{x:18,y:80},   // 왼쪽 3명
+    {x:85,y:43},{x:86,y:62},{x:82,y:80},   // 오른쪽 3명
+    {x:33,y:84},{x:50,y:87},{x:67,y:84}    // 아래쪽 3명
   ];
   const order = FACES.slice();
   const chars = [];
