@@ -32,8 +32,8 @@ window.INVITE_CONFIG = {
   // 아직 Supabase를 안 만들었으면 그대로 두세요.
   // 비어 있으면 자동으로 "데모 모드"(이 브라우저에만 저장)로 동작합니다.
   supabase: {
-    url: "",       // 예: "https://xxxxxxxx.supabase.co"
-    anonKey: "",   // 예: "eyJhbGciOi...."
+    url: "https://fhiqsvqluyzscxmsagnf.supabase.co",
+    anonKey: "sb_publishable_QkDrrAtMPmcw0GW6Wmy6jw_Fd4wGWoD",  // publishable(공개용) 키
     table: "guestbook",
   },
 };
