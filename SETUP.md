@@ -112,14 +112,14 @@ supabase: {
 
 ## E. 이미지 에셋 (참고)
 
-`docs/`의 이미지는 모두 배경 제거(누끼)된 PNG이고, `assets/src/`의 원본 3개로 재생성할 수 있습니다.
+`docs/`의 이미지는 모두 배경 제거(누끼)된 PNG이고, `assets/`의 원본 3개로 재생성할 수 있습니다.
 
 | 배포 파일 | 원본 | 만드는 법 |
 |-----------|------|-----------|
-| `chars/` (전신 캐릭터 10) | `assets/src/char_ref.png` | 그리드 셀별로 잘라 rembg 배경제거 |
+| `chars/` (전신 캐릭터 10) | `assets/char_ref.png` | 그리드 셀별로 잘라 rembg 배경제거 |
 | `faces_char/` (폭죽용 얼굴 10) | `chars/*` | 머리 영역 원형 크롭(256px) |
-| `cards/` (과일 카드 4) | `assets/src/cards.png` | 흰 카드 영역 세그멘테이션 |
-| `bell.png` (할리갈리 종) | `assets/src/bell.jpg` | rembg 배경제거 |
+| `cards/` (과일 카드 4) | `assets/cards.png` | 흰 카드 영역 세그멘테이션 |
+| `bell.png` (할리갈리 종) | `assets/bell.jpg` | rembg 배경제거 |
 
 > 재생성 파이프라인 상세는 `PRD.md` 3장 참고. (필요 라이브러리: rembg, Pillow, numpy, scipy)
 
@@ -137,7 +137,7 @@ invi/                     ← 저장소 루트 (전체 push)
 │  ├─ cards/              ← 과일 카드 4 (banana, lime, plum, straw)
 │  ├─ chars/              ← 전신 캐릭터 10
 │  └─ faces_char/         ← 폭죽용 얼굴 10
-├─ assets/src/            ← 재생성용 원본(비배포): char_ref.png, cards.png, bell.jpg
+├─ assets/            ← 재생성용 원본(비배포): char_ref.png, cards.png, bell.jpg
 ├─ PRD.md                 ← 제품 요구사항(현재 버전 재현용)
 └─ SETUP.md               ← 이 문서
 ```

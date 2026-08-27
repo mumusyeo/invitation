@@ -42,7 +42,7 @@
 
 ### 3.1 인물 캐릭터 — `docs/chars/{id}.png` (10개)
 - **정체**: 10명 전신 캐리커처(큰 머리 스타일). 흰옷 계열.
-- **원본**: `assets/src/char_ref.png` (5열×2행 그리드, 1536×1024). 각 셀 1명.
+- **원본**: `assets/char_ref.png` (5열×2행 그리드, 1536×1024). 각 셀 1명.
 - **생성**: 각 셀을 잘라 `rembg`(u2net)로 흰 배경 제거 → 알파 bbox로 트림 → **세로 420px**로 정규화.
 - **id 목록(고정 순서)**:
   `01_man1_left, 02_man2_glass, 03_man3_center, 04_woman_offsh, 05_woman_left, 06_woman_pony, 07_woman_bang, 08_woman_blue, 09_woman_smile, 10_man4_right`
@@ -54,14 +54,14 @@
 
 ### 3.3 할리갈리 카드 — `docs/cards/{banana,lime,plum,straw}.png` (4개)
 - **정체**: 흰 카드 위 과일 그림. 바나나×1, 라임×3, 자두×4, 딸기×5.
-- **원본**: `assets/src/cards.png`(카드 사진). 하단 개별 카드 4장 영역을 사용.
+- **원본**: `assets/cards.png`(카드 사진). 하단 개별 카드 4장 영역을 사용.
 - **생성**: 각 카드 영역 크롭 → "흰 카드" 픽셀(밝고 저채도)로 이진 마스크 → 최대 연결요소 + 구멍채우기(scipy `binary_fill_holes`)로 **카드 전체(흰 배경+과일)** 를 살림(과일만 남기면 안 됨) → 알파 페더 → **세로 300px**.
 
 ### 3.4 종 — `docs/bell.png`
 - **정체**: 실제 할리갈리 탁상벨(크롬 돔 + 검은 버튼 + 검은 받침).
-- **원본**: `assets/src/bell.jpg`. `rembg`로 배경 제거 → 트림.
+- **원본**: `assets/bell.jpg`. `rembg`로 배경 제거 → 트림.
 
-> 소스 원본(`assets/src/char_ref.png`, `cards.png`, `bell.jpg`)만 있으면 위 파이프라인으로 전 에셋 재생성 가능. (rembg, Pillow, numpy, scipy 필요)
+> 소스 원본(`assets/char_ref.png`, `cards.png`, `bell.jpg`)만 있으면 위 파이프라인으로 전 에셋 재생성 가능. (rembg, Pillow, numpy, scipy 필요)
 
 ---
 
@@ -175,7 +175,7 @@ docs/                    ← 이 폴더가 사이트 루트 (GitHub Pages=/docs)
 ├─ cards/  banana.png lime.png plum.png straw.png
 ├─ chars/  01_…png … 10_…png            (전신 캐릭터 10)
 └─ faces_char/ 01_…png … 10_…png        (폭죽용 얼굴 10)
-assets/src/              ← 재생성용 원본(비배포): char_ref.png, cards.png, bell.jpg
+assets/              ← 재생성용 원본(비배포): char_ref.png, cards.png, bell.jpg
 ```
 
 ---
