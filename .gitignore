@@ -1,6 +1,78 @@
+# === 프로젝트 ===
 # macOS
 .DS_Store
-
 # logs / temp
 *.log
 tmp/
+
+# === Python (GitHub 기본 템플릿) ===
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[codz]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Sphinx documentation (프로젝트 docs/ 사이트와 무관 — _build 하위만 무시)
+docs/_build/
+
+# Environments
+.env
+.envrc
+.venv
+env/
+venv/
+ENV/
+
+# mypy / type checkers
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# Ruff
+.ruff_cache/
+
+# IDE
+.idea/
+# .vscode/
