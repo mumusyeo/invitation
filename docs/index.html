@@ -50,7 +50,7 @@
                repeating-linear-gradient(94deg, rgba(0,55,0,.18) 0 2px, transparent 2px 12px)}
 
   .scene{position:absolute;left:50%;top:50%;transform:translate(-50%,-42%);
-    width:min(92vw,520px);height:min(70vh,520px);z-index:3}
+    width:min(97vw,620px);height:min(82vh,640px);z-index:3}
   /* 잔디 위 네모 돗자리(체크 패턴) */
   .mat{position:absolute;left:50%;top:56%;transform:translate(-50%,-50%) rotate(-2deg);
     width:48%;aspect-ratio:1/0.9;border-radius:16px;
@@ -63,13 +63,13 @@
   /* 전신 캐릭터 — 돗자리 둘레에 둘러앉음, 살짝 바운스 */
   .char{position:absolute;transform:translate(-50%,-50%);z-index:4;
     transition:transform .55s cubic-bezier(.2,.8,.3,1);will-change:transform}
-  .char img{height:120px;width:auto;display:block;
+  .char img{height:180px;width:auto;display:block;
     filter:drop-shadow(0 8px 6px rgba(0,0,0,.28));
     transform-origin:50% 100%;animation:idle 2.8s ease-in-out infinite}
   @keyframes idle{0%,100%{transform:translateY(0) rotate(-1.5deg)}
     50%{transform:translateY(-4px) rotate(1.5deg)}}
   .char.run img{animation:none}
-  @media (max-width:430px){ .char img{height:104px} }
+  @media (max-width:430px){ .char img{height:150px} }
 
   .card{position:absolute;transform:translate(-50%,-50%);z-index:3;perspective:440px;
     filter:drop-shadow(0 3px 5px rgba(0,0,0,.4))}
